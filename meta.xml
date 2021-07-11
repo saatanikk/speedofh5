@@ -1,0 +1,11 @@
+<meta>
+    <info name="Speedometer (Forza Horizon 5)" author="satan" type="script" version="1.0.0" />
+
+    <script src='systems/clientRender.lua' type='client' cache='false'/>
+    
+    <file src='fonts/italic.ttf'/>
+
+    <file src='textures/background.png'/>
+    <file src='textures/arrow.png'/>
+
+</meta>

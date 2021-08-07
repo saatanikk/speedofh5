@@ -31,14 +31,18 @@ clientRender = {
     fonts     = {
         italic     = dxCreateFont('fonts/italic.ttf', scale_x(70));
         gear       = dxCreateFont('fonts/italic.ttf', scale_x(38));
-        mph       = dxCreateFont('fonts/italic.ttf', scale_x(19));
+        mph        = dxCreateFont('fonts/italic.ttf', scale_x(19));
+        fuel       = dxCreateFont('fonts/italic.ttf', scale_x(16));
+        mileage    = dxCreateFont('fonts/italic.ttf', scale_x(15));
     };
     scale = {
         background = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
         arrow      = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
         gear       = {scale_x(1957), scale_y(890), scale_x(1500), scale_y(990)};
         velocity   = {scale_x(1957), scale_y(995), scale_x(1500), scale_y(1060)};
-        mph       = {scale_x(1989), scale_y(890), scale_x(1600), scale_y(990)};
+        mph        = {scale_x(1989), scale_y(890), scale_x(1600), scale_y(990)};
+        fuel       = {scale_x(1989), scale_y(850), scale_x(1600), scale_y(990)};
+        mileage    = {scale_x(1765), scale_y(930), scale_x(1600), scale_y(990)};
     };
 }
 
@@ -85,14 +89,19 @@ end
 function speedometer.draw()
     speedometer.data.vehicle = getPedOccupiedVehicle(localPlayer)
     if speedometer.data.vehicle then
+        speedometer.data.fuel    = getElementData(speedometer.data.vehicle, 'vehicle:fuel') or 0
+        speedometer.data.mileage = getElementData(speedometer.data.vehicle, 'vehicle:mileage') or 0
         speedometer.data.velocity = speedometer.getElementSpeed(speedometer.data.vehicle, "km/h")
         speedometer.data.rpm = speedometer.getVehicleRPM(speedometer.data.vehicle)/12000 * 257
         dxDrawImage(clientRender.scale.arrow[1], clientRender.scale.arrow[2], clientRender.scale.arrow[3], clientRender.scale.arrow[4], clientRender.textures.arrow, speedometer.data.rpm, 0, 0)
         dxDrawImage(clientRender.scale.background[1], clientRender.scale.background[2], clientRender.scale.background[3], clientRender.scale.background[4], clientRender.textures.background)
         dxDrawText('MPH', clientRender.scale.mph[1], clientRender.scale.mph[2], clientRender.scale.mph[3], clientRender.scale.mph[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.mph, "center", "center")
         dxDrawText(getVehicleCurrentGear(speedometer.data.vehicle), clientRender.scale.gear[1], clientRender.scale.gear[2], clientRender.scale.gear[3], clientRender.scale.gear[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.gear, "center", "center")
-    
         dxDrawText(string.format('%03d', speedometer.data.velocity), clientRender.scale.velocity[1], clientRender.scale.velocity[2], clientRender.scale.velocity[3], clientRender.scale.velocity[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.italic, "center", "center")
+    
+        dxDrawText(string.format('%03d', math.floor(speedometer.data.fuel))..'L', clientRender.scale.fuel[1], clientRender.scale.fuel[2], clientRender.scale.fuel[3], clientRender.scale.fuel[4], tocolor(255, 255, 255, 110), 1.00, clientRender.fonts.fuel, "center", "center")
+        dxDrawText(string.format('%03d', math.floor(speedometer.data.mileage))..'KM', clientRender.scale.mileage[1], clientRender.scale.mileage[2], clientRender.scale.mileage[3], clientRender.scale.mileage[4], tocolor(255, 255, 255, 110), 1.00, clientRender.fonts.mileage, "left", "center")
+
     end
 end
 

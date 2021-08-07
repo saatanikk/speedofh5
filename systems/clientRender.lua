@@ -5,9 +5,9 @@
     @Contact on kontaktthinks@gmail.com/satan_#4535
 ]]
 
-local speedometer = {data={}};
-local sx, sy = guiGetScreenSize();
-local zoom = 1;
+local speedometer = {data={}}
+local sx, sy = guiGetScreenSize()
+local zoom = 1
 
 if (sx < 1920) then
     if sx < 1600 and sy < 900 then
@@ -23,9 +23,25 @@ function scale_y(value)
     return value/zoom
 end
 
-function createTexture(file)
-    return dxCreateTexture(file, "dxt5", false, "clamp")
-end
+clientRender = {
+    textures  = {
+        background = dxCreateTexture('textures/background.png', 'dxt5', false, 'clamp');
+        arrow      = dxCreateTexture('textures/arrow.png', 'dxt5', false, 'clamp');
+    };
+    fonts     = {
+        italic     = dxCreateFont('fonts/italic.ttf', scale_x(70));
+        gear       = dxCreateFont('fonts/italic.ttf', scale_x(38));
+        mph       = dxCreateFont('fonts/italic.ttf', scale_x(19));
+    };
+    scale = {
+        background = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
+        arrow      = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
+        gear       = {scale_x(1957), scale_y(890), scale_x(1500), scale_y(990)};
+        velocity   = {scale_x(1957), scale_y(995), scale_x(1500), scale_y(1060)};
+        mph       = {scale_x(1989), scale_y(890), scale_x(1600), scale_y(990)};
+    };
+}
+
 
 function speedometer.getElementSpeed(theElement, unit)
     assert(isElement(theElement), "Bad argument 1 @ getElementSpeed (element expected, got " .. type(theElement) .. ")")
@@ -71,62 +87,22 @@ function speedometer.draw()
     if speedometer.data.vehicle then
         speedometer.data.velocity = speedometer.getElementSpeed(speedometer.data.vehicle, "km/h")
         speedometer.data.rpm = speedometer.getVehicleRPM(speedometer.data.vehicle)/12000 * 257
-        dxDrawImage(clientRender.var._positions.arrow[1], clientRender.var._positions.arrow[2], clientRender.var._positions.arrow[3], clientRender.var._positions.arrow[4], clientRender.var._textures.arrow, speedometer.data.rpm, 0, 0)
-        dxDrawImage(clientRender.var._positions.background[1], clientRender.var._positions.background[2], clientRender.var._positions.background[3], clientRender.var._positions.background[4], clientRender.var._textures.background)
-        dxDrawText('MPH', clientRender.var._positions.mph[1], clientRender.var._positions.mph[2], clientRender.var._positions.mph[3], clientRender.var._positions.mph[4], tocolor(255, 255, 255, 140), 1.00, clientRender.var._fonts.mph, "center", "center")
-        dxDrawText(getVehicleCurrentGear(speedometer.data.vehicle), clientRender.var._positions.gear[1], clientRender.var._positions.gear[2], clientRender.var._positions.gear[3], clientRender.var._positions.gear[4], tocolor(255, 255, 255, 140), 1.00, clientRender.var._fonts.gear, "center", "center")
+        dxDrawImage(clientRender.scale.arrow[1], clientRender.scale.arrow[2], clientRender.scale.arrow[3], clientRender.scale.arrow[4], clientRender.textures.arrow, speedometer.data.rpm, 0, 0)
+        dxDrawImage(clientRender.scale.background[1], clientRender.scale.background[2], clientRender.scale.background[3], clientRender.scale.background[4], clientRender.textures.background)
+        dxDrawText('MPH', clientRender.scale.mph[1], clientRender.scale.mph[2], clientRender.scale.mph[3], clientRender.scale.mph[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.mph, "center", "center")
+        dxDrawText(getVehicleCurrentGear(speedometer.data.vehicle), clientRender.scale.gear[1], clientRender.scale.gear[2], clientRender.scale.gear[3], clientRender.scale.gear[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.gear, "center", "center")
     
-        dxDrawText(string.format('%03d', speedometer.data.velocity), clientRender.var._positions.velocity[1], clientRender.var._positions.velocity[2], clientRender.var._positions.velocity[3], clientRender.var._positions.velocity[4], tocolor(255, 255, 255, 140), 1.00, clientRender.var._fonts.italic, "center", "center")
+        dxDrawText(string.format('%03d', speedometer.data.velocity), clientRender.scale.velocity[1], clientRender.scale.velocity[2], clientRender.scale.velocity[3], clientRender.scale.velocity[4], tocolor(255, 255, 255, 140), 1.00, clientRender.fonts.italic, "center", "center")
     end
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, function()
 	if isPedInVehicle(localPlayer) then
-        clientRender = {
-            var = {
-                _textures  = {
-                    background = createTexture('textures/background.png');
-                    arrow      = createTexture('textures/arrow.png');
-                };
-                _fonts     = {
-                    italic     = dxCreateFont('fonts/italic.ttf', scale_x(70));
-                    gear       = dxCreateFont('fonts/italic.ttf', scale_x(38));
-                    mph       = dxCreateFont('fonts/italic.ttf', scale_x(19));
-                };
-                _positions = {
-                    background = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
-                    arrow      = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
-                    gear       = {scale_x(1957), scale_y(890), scale_x(1500), scale_y(990)};
-                    velocity   = {scale_x(1957), scale_y(995), scale_x(1500), scale_y(1060)};
-                    mph       = {scale_x(1989), scale_y(890), scale_x(1600), scale_y(990)};
-                };
-            }
-        }
 		addEventHandler('onClientRender', root, speedometer.draw)
 	end
 	
 	addEventHandler("onClientVehicleEnter", root, function(player, seat)
 		if player == localPlayer and seat == 0 then
-            clientRender = {
-                var = {
-                    _textures  = {
-                        background = createTexture('textures/background.png');
-                        arrow      = createTexture('textures/arrow.png');
-                    };
-                    _fonts     = {
-                        italic     = dxCreateFont('fonts/italic.ttf', scale_x(70));
-                        gear       = dxCreateFont('fonts/italic.ttf', scale_x(38));
-                        mph       = dxCreateFont('fonts/italic.ttf', scale_x(19));
-                    };
-                    _positions = {
-                        background = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
-                        arrow      = {scale_x(1579), scale_y(795), scale_x(300), scale_y(300)};
-                        gear       = {scale_x(1957), scale_y(890), scale_x(1500), scale_y(990)};
-                        velocity   = {scale_x(1957), scale_y(995), scale_x(1500), scale_y(1060)};
-                        mph       = {scale_x(1989), scale_y(890), scale_x(1600), scale_y(990)};
-                    };
-                }
-            }
             addEventHandler('onClientRender', root, speedometer.draw)
 		end
 	end)
@@ -134,19 +110,7 @@ addEventHandler("onClientResourceStart", resourceRoot, function()
 	addEventHandler("onClientVehicleExit", root, function(player, seat)
 		if player == localPlayer and seat == 0 then
 			removeEventHandler('onClientRender', root, speedometer.draw)
-            for k, texture in pairs(clientRender.var._textures) do 
-                if isElement(texture) then 
-                    destroyElement(texture)
-                end
-            end
-            clientRender.var._textures = {}
-            for k, font in pairs(clientRender.var._fonts) do 
-                if isElement(font) then 
-                    destroyElement(font)
-                end
-            end
-            clientRender.var._fonts = {}
-		end
+        end
 	end)
 end)
 

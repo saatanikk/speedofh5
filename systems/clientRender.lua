@@ -7,20 +7,13 @@
 
 local speedometer = {data={}}
 local sx, sy = guiGetScreenSize()
-local zoom = 1
-
-if (sx < 1920) then
-    if sx < 1600 and sy < 900 then
-        zoom = math.min(1.2, 1920 / sx);
-    end
-end  
 
 function scale_x(value)
-    return value/zoom
+    return value/(1920/sx)
 end
 
 function scale_y(value)
-    return value/zoom
+    return value/(1080/sy)
 end
 
 clientRender = {
